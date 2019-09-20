@@ -1,0 +1,27 @@
+{
+  "name": "halimonalexander/input",
+  "description": "Input library",
+  "license": "BSD-3-Clause",
+  "homepage": "https://github.com/halimonalexander/input",
+  "support": {
+    "issues": "https://github.com/halimonalexander/input/issues"
+  },
+  "authors": [
+    {
+      "name": "Halimon Alexander",
+      "email": "vvthanatos@gmail.com",
+      "role": "lead"
+    }
+  ],
+  "require": {
+    "php": "^7.2",
+    "ext-json": "*"
+  },
+  "require-dev": {
+  },
+  "autoload": {
+    "psr-4": {
+      "HalimonAlexander\\Input\\": "src/"
+    }
+  }
+}
