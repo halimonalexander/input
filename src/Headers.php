@@ -17,9 +17,8 @@ class Headers
     {
         $this->headers = $_SERVER;
 
-        if (\headers_sent()) {
+        if (function_exists('getallheaders')) {
             $httpHeaders = \getallheaders();
-
             if ($httpHeaders !== false) {
                 foreach ($httpHeaders as $key => $value)
                     $this->httpHeaders[strtoupper($key)] = $value;
