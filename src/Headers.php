@@ -44,10 +44,10 @@ class Headers
             return $this->headers['AUTHORIZATION'];
         } elseif (array_key_exists('HTTP_AUTHORIZATION', $this->headers)) {
             return $this->headers['HTTP_AUTHORIZATION'];
-        } elseif (array_key_exists('AUTHORIZATION', $this->headers)) {
-            return $this->headers['AUTHORIZATION'];
-        } elseif (array_key_exists('HTTP_AUTHORIZATION', $this->headers)) {
-            return $this->headers['AUTHORIZATION'];
+        } elseif (array_key_exists('AUTHORIZATION', $this->httpHeaders)) {
+            return $this->httpHeaders['AUTHORIZATION'];
+        } elseif (array_key_exists('HTTP_AUTHORIZATION', $this->httpHeaders)) {
+            return $this->httpHeaders['AUTHORIZATION'];
         } else {
             return null;
         }
