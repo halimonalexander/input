@@ -17,6 +17,21 @@ class Input
     const TYPE_INT     = 'int';
     const TYPE_STRING  = 'string';
 
+    private $headers;
+
+    public function __construct()
+    {
+        $this->headers = new Headers();
+    }
+
+    /**
+     * @return Headers
+     */
+    public function headers(): Headers
+    {
+        return $this->headers;
+    }
+
     /**
      * @return mixed
      */
@@ -37,6 +52,9 @@ class Input
         return $this->process($value, $emptyAsNull);
     }
 
+    /**
+     * @return false|mixed|string
+     */
     private function getIncomingData()
     {
         $contentType = $_SERVER["CONTENT_TYPE"];
@@ -49,6 +67,9 @@ class Input
         return $this->rawPost();
     }
 
+    /**
+     * @return false|string
+     */
     private function rawPost()
     {
         return file_get_contents("php://input");
@@ -77,7 +98,6 @@ class Input
             return (string) $value;
         }
     }
-
 
     /**
      * @param mixed $value
