@@ -53,7 +53,7 @@ class Input
     }
 
     /**
-     * @return false|mixed|string
+     * @return array
      */
     private function getIncomingData()
     {
@@ -64,7 +64,7 @@ class Input
         if ($contentType == "application/json")
             return json_decode($this->rawPost(), true);
 
-        return $this->rawPost();
+        return [$this->rawPost()];
     }
 
     /**
