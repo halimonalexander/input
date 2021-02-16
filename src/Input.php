@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of Input.
  *
@@ -7,32 +8,34 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace HalimonAlexander\Input;
 
 class Input
 {
-    const TYPE_BOOL    = 'bool';
-    const TYPE_INT     = 'int';
-    const TYPE_STRING  = 'string';
+    public const TYPE_BOOL   = 'bool';
+    public const TYPE_INT    = 'int';
+    public const TYPE_STRING = 'string';
 
-    private $headers;
+    private Headers $headers;
 
     public function __construct()
     {
         $this->headers = new Headers();
     }
 
-    /**
-     * @return Headers
-     */
     public function headers(): Headers
     {
         return $this->headers;
     }
 
     /**
+     * @param string $field
+     * @param string $type
+     * @param bool $emptyAsNull
+     *
      * @return mixed
      */
     public function get(string $field, string $type = self::TYPE_STRING, bool $emptyAsNull = true)
@@ -41,8 +44,12 @@ class Input
 
         return $this->process($value, $emptyAsNull);
     }
-    
+
     /**
+     * @param string $field
+     * @param string $type
+     * @param bool $emptyAsNull
+     *
      * @return mixed
      */
     public function post(string $field, string $type = self::TYPE_STRING, bool $emptyAsNull = true)
@@ -52,30 +59,40 @@ class Input
         return $this->process($value, $emptyAsNull);
     }
 
-    /**
-     * @return array
-     */
-    private function getIncomingData()
+    private function getIncomingData(): array
     {
         $contentType = $_SERVER["CONTENT_TYPE"];
-        if ($contentType == "multipart/form-data" || $contentType == "application/x-www-form-urlencoded")
+        if ($contentType === "multipart/form-data" || $contentType === "application/x-www-form-urlencoded") {
             return $_POST;
+        }
 
-        if ($contentType == "application/json")
-            return json_decode($this->rawPost(), true);
+        if ($contentType === "application/json") {
+            try {
+                return json_decode($this->rawPost(), true, 512, JSON_THROW_ON_ERROR);
+            } catch (\JsonException $e) {
+                return [];
+            }
+        }
 
         return [$this->rawPost()];
     }
 
-    /**
-     * @return false|string
-     */
-    private function rawPost()
+    private function rawPost(): string
     {
-        return file_get_contents("php://input");
+        $input = file_get_contents("php://input");
+
+        if ($input === false) {
+            return '{}';
+        }
+
+        return $input;
     }
 
     /**
+     * @param array $source
+     * @param string $field
+     * @param string $type
+     *
      * @return bool|int|string|null
      */
     private function extract(array $source, string $field, string $type)
@@ -90,13 +107,14 @@ class Input
 
         $value = trim($source[$field]);
 
-        if ($type == $this::TYPE_BOOL) {
+        if ($type === $this::TYPE_BOOL) {
             return (bool) $value;
-        } elseif ($type == $this::TYPE_INT) {
-            return (int) $value;
-        } elseif ($type == $this::TYPE_STRING) {
-            return (string) $value;
         }
+        if ($type === $this::TYPE_INT) {
+            return (int) $value;
+        }
+
+        return $value;
     }
 
     /**
