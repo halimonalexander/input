@@ -1,0 +1,52 @@
+name: php
+
+on:
+  push:
+    branches:
+      - 'master'
+    tags:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  test-code:
+    name: Test code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup PHP with composer v1
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          tools: composer:v1
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Get Composer Cache Dev
+        id: composer-cache-dev
+        run: |
+            echo "::set-output name=dir::$(composer config cache-files-dir)"
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache-dev.outputs.dir }}
+          key: ${{ runner.os }}-composer-dev-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-dev-
+
+      - name: Composer Install Dev
+        run: composer install -q -n --no-ansi --no-scripts --no-progress --prefer-dist
+
+      - name: PHPStan
+        run: ./vendor/bin/phpstan a --no-progress --memory-limit=12G --error-format=github
+
+      - name: Psalm
+        run: ./vendor/bin/psalm --show-info=false
+
+      - name: PHPCS
+        run: ./vendor/bin/phpcs
+
+      - name: Run Tests
+        run: ./vendor/bin/phpunit
