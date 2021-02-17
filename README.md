@@ -1,7 +1,14 @@
 # Input
 Input library that provides easy access to POST data and authorization headers.
 
-### Example:
+![main branch parameter](https://github.com/halimonalexander/input/workflows/php/badge.svg)
+
+## Install
+```bash
+$ composer require halimonalexander/input
+```
+
+## Example of usage
 ```php
 use HalimonAlexander\Input\Input;
 
