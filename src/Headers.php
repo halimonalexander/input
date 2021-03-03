@@ -50,10 +50,55 @@ class Headers
                 return $this->httpHeaders['AUTHORIZATION'];
 
             case array_key_exists('HTTP_AUTHORIZATION', $this->httpHeaders):
-                return $this->httpHeaders['AUTHORIZATION'];
+                return $this->httpHeaders['HTTP_AUTHORIZATION'];
 
             default:
                 return null;
         }
+    }
+
+    public function getUri(): string
+    {
+        return $_SERVER['REQUEST_URI'];
+    }
+
+    public function getProtocol(): string
+    {
+        return $_SERVER['SERVER_PROTOCOL'];
+    }
+
+    /**
+     * Get the request method used, taking overrides into account.
+     *
+     * @return string The Request method to handle
+     */
+    public function getRequestMethod(): string
+    {
+        $method = $_SERVER['REQUEST_METHOD'];
+
+        if ($method === 'POST' && $this->hasMethodOverride() && $this->isValidMethodOverride()) {
+            return $this->getMethodOverride();
+        }
+
+        return $method;
+    }
+
+    private function hasMethodOverride(): bool
+    {
+        $headers = !empty($this->httpHeaders) ? $this->httpHeaders : $_SERVER;
+
+        return isset($headers['X-HTTP-Method-Override']);
+    }
+
+    private function isValidMethodOverride(): bool
+    {
+        return in_array($this->getMethodOverride(), ['PUT', 'DELETE', 'PATCH']);
+    }
+
+    private function getMethodOverride(): string
+    {
+        $headers = !empty($this->httpHeaders) ? $this->httpHeaders : $_SERVER;
+
+        return $headers['X-HTTP-Method-Override'];
     }
 }
